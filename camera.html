@@ -237,6 +237,7 @@
         // 这里就采用新的方法来获取视频
         navigator.mediaDevices.getUserMedia(userMediaConstraints).then(function success(stream) {
           video.srcObject = stream;
+          video.play();
  
         }).catch(function (error) {
           alert(error.name + error.message)
