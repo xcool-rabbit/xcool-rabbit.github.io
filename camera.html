@@ -79,8 +79,7 @@
             });
 
             function start() {
-                navigator.mediaDevices.enumerateDevices().then(function (devices) {
-                    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                navigator.mediaDevices.getUserMedia({ video: true, audio: false })
                         .then(_stream => {
                             stream = _stream;
                             console.log('stream', stream);
@@ -92,7 +91,6 @@
                             setTimeout(processVideo, 0)
                         })
                         .catch(err => console.log(`An error occurred: ${err}`));
-                }
         
     }
 
