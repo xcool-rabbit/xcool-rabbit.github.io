@@ -2,132 +2,137 @@
 <html>
 
 <head>
-    <title>OpenCV Video Examples - Camera</title>
-    <link href="app.css" rel="stylesheet">
+  <title>OpenCV Video Examples - Camera</title>
+  <link href="app.css" rel="stylesheet">
 </head>
 
 <body>
-    <h1>OpenCV Camera</h1>
-    <div>
-        <button id="actionBtn">Start</button>
-    </div>
-    <video id="video" width="640" height="360"></video>
-    <canvas id="canvasOutput"></canvas>
-    <script src="test_pipeline.js" type="text/javascript"></script>
-    <script>
-        alert('script start')
-        Module.onRuntimeInitialized = _ => {
-            alert('onReady() start')
-            onReady();
-        };
+  <h1>OpenCV Camera</h1>
+  <div>
+    <button id="actionBtn">Start</button>
+  </div>
+  <video id="video" width="640" height="360"></video>
+  <canvas id="canvasOutput"></canvas>
+  <script src="test_pipeline.js" type="text/javascript" onload="onCvLoaded();"></script>
+  <script>
+    alert('script start')
+    function onCvLoaded() {
+      console.log('cv', cv);
+      alert('onReady() start')
+      cv.onRuntimeInitialized = onReady;
+    }
+    // Module.onRuntimeInitialized = _ => {
+    //   alert('onReady() start')
+    //   onReady();
+    // };
 
-        const video = document.getElementById('video');
-        const actionBtn = document.getElementById('actionBtn');
-        const width = 640;
-        const height = 360;
-        const FPS = 30;
-        let stream;
-        let streaming = false;
+    const video = document.getElementById('video');
+    const actionBtn = document.getElementById('actionBtn');
+    const width = 640;
+    const height = 360;
+    const FPS = 30;
+    let stream;
+    let streaming = false;
 
-        Module['VideoCapture'] = function (videoSource) {
-            var video = null;
-            if (typeof videoSource === 'string') {
-                video = document.getElementById(videoSource);
-            } else {
-                video = videoSource;
-            }
-            if (!(video instanceof HTMLVideoElement)) {
-                throw new Error('Please input the valid video element or id.');
-                return;
-            }
-            var canvas = document.createElement('canvas');
-            canvas.width = video.width;
-            canvas.height = video.height;
-            var ctx = canvas.getContext('2d');
-            this.video = video;
-            this.read = function (frame) {
-                if (!(frame instanceof Module.Mat)) {
-                    throw new Error('Please input the valid cv.Mat instance.');
-                    return;
-                }
-                if (frame.type() !== Module.CV_8UC4) {
-                    throw new Error('Bad type of input mat: the type should be cv.CV_8UC4.');
-                    return;
-                }
-                if (frame.cols !== video.width || frame.rows !== video.height) {
-                    throw new Error('Bad size of input mat: the size should be same as the video.');
-                    return;
-                }
-                ctx.drawImage(video, 0, 0, video.width, video.height);
-                frame.data.set(ctx.getImageData(0, 0, video.width, video.height).data);
-            };
-        };
+    Module['VideoCapture'] = function (videoSource) {
+      var video = null;
+      if (typeof videoSource === 'string') {
+        video = document.getElementById(videoSource);
+      } else {
+        video = videoSource;
+      }
+      if (!(video instanceof HTMLVideoElement)) {
+        throw new Error('Please input the valid video element or id.');
+        return;
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = video.width;
+      canvas.height = video.height;
+      var ctx = canvas.getContext('2d');
+      this.video = video;
+      this.read = function (frame) {
+        if (!(frame instanceof Module.Mat)) {
+          throw new Error('Please input the valid cv.Mat instance.');
+          return;
+        }
+        if (frame.type() !== Module.CV_8UC4) {
+          throw new Error('Bad type of input mat: the type should be cv.CV_8UC4.');
+          return;
+        }
+        if (frame.cols !== video.width || frame.rows !== video.height) {
+          throw new Error('Bad size of input mat: the size should be same as the video.');
+          return;
+        }
+        ctx.drawImage(video, 0, 0, video.width, video.height);
+        frame.data.set(ctx.getImageData(0, 0, video.width, video.height).data);
+      };
+    };
 
-        function onReady() {
-            var node = new Module.BenchmarkNode;
-            let src;
-            let dst;
-            const cap = new Module.VideoCapture(video);
+    function onReady() {
+      var node = new Module.BenchmarkNode;
+      let src;
+      let dst;
+      const cap = new Module.VideoCapture(video);
 
-            actionBtn.addEventListener('click', () => {
-                if (streaming) {
-                    stop();
-                    actionBtn.textContent = 'Start';
-                } else {
-                    alert('start() start')
-                    start();
-                    actionBtn.textContent = 'Stop';
-                }
-            });
-            alert('btn listener added')
+      actionBtn.addEventListener('click', () => {
+        if (streaming) {
+          stop();
+          actionBtn.textContent = 'Start';
+        } else {
+          alert('start() start')
+          start();
+          actionBtn.textContent = 'Stop';
+        }
+      });
+      alert('btn listener added')
 
-            function start() {
-                navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                        .then(_stream => {
-                            stream = _stream;
-                            console.log('stream', stream);
-                            alert('stream get')
-                            video.srcObject = stream;
-                            video.play();
-                            streaming = true;
-                            src = new Module.Mat(height, width, Module.CV_8UC4);
-                            dst = new Module.Mat(height, width, Module.CV_8UC1);
-                            setTimeout(processVideo, 0)
-                        })
-                        .catch(err => console.log(`An error occurred: ${err}`));
-        
+      function start() {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then(_stream => {
+            stream = _stream;
+            console.log('stream', stream);
+            alert('stream get')
+            video.srcObject = stream;
+            video.play();
+            streaming = true;
+            src = new Module.Mat(height, width, Module.CV_8UC4);
+            dst = new Module.Mat(height, width, Module.CV_8UC1);
+            setTimeout(processVideo, 0)
+          })
+          .catch(err => console.log(`An error occurred: ${err}`));
+
+      }
+
+      function stop() {
+        if (video) {
+          video.pause();
+          video.srcObject = null;
+        }
+        if (stream) {
+          stream.getVideoTracks()[0].stop();
+        }
+        streaming = false;
+      }
+
+      var cnt = 1;
+      function processVideo() {
+        if (!streaming) {
+          src.delete();
+          dst.delete();
+          return;
+        }
+        const begin = Date.now();
+        cap.read(src);
+        console.log(src);
+        node.runFromCamera(src, cnt);
+        console.log(cnt);
+        cnt = cnt + 1;
+        const delay = 1000 / FPS - (Date.now() - begin);
+        setTimeout(processVideo, delay);
+      }
     }
 
-            function stop() {
-                if (video) {
-                    video.pause();
-                    video.srcObject = null;
-                }
-                if (stream) {
-                    stream.getVideoTracks()[0].stop();
-                }
-                streaming = false;
-            }
-
-            var cnt = 1;
-            function processVideo() {
-                if (!streaming) {
-                    src.delete();
-                    dst.delete();
-                    return;
-                }
-                const begin = Date.now();
-                cap.read(src);
-                console.log(src);
-                node.runFromCamera(src, cnt);
-                console.log(cnt);
-                cnt = cnt + 1;
-                const delay = 1000 / FPS - (Date.now() - begin);
-                setTimeout(processVideo, delay);
-            }
-        }
-
-    </script>
+  </script>
 </body>
 
 </html>
