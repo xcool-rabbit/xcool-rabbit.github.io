@@ -44,6 +44,7 @@
       }
       alert('WebRTC issue-! ' + fctName + ' not present in your browser')
     }
+    alert('判断完成')
     const video = document.querySelector('#video')
 
     // 如果浏览器支持，该方法的更新是向后兼容，新版将所有功能都使用navigator.mediaDevices进行了封装
@@ -58,6 +59,7 @@
       if (!navigator.mediaDevices.getUserMedia) {
         // 声明一个数组，用于装载设备媒体设备的相关信息，由于回调中sourceInfos对象中携带有所有媒体对象的相关信息
         // 这里对信息进行遍历筛选，只选出摄像头的Id并保存在数组中
+        alert('执行旧标准')
         var exArray = [];  
         for (var i = 0; i < sourceInfos.length; ++i) {
           if (sourceInfos[i].kind == 'videoinput') {
@@ -99,6 +101,7 @@
         }
       } else {  // 当采用最新的标准方式获取视频时
         // 这里对生成视频进行配置
+        alert('执行新标准')
         var userMediaConstraints = {
           audio: false, // 是否获取音频
           video: {
@@ -108,7 +111,7 @@
         // 这里就采用新的方法来获取视频
         navigator.mediaDevices.getUserMedia(userMediaConstraints).then(function success(stream) {
           video.srcObject = stream;
- 
+          alert('命中getUserMedia')
         }).catch(function (error) {
           alert(error.name + error.message)
         });
