@@ -14,9 +14,11 @@
   <!-- 必须设置为playsinline，默认全屏播放可能会导致黑屏 -->
   <video id="video" autoplay playsinline></video>
   <script>
+    alert('outside function')
     // 习惯性写在函数中，控制变量
    ;(function(){
     //  由于IOS必须在版本11以上才能使用webrtc，并且只有Safari支持，所以做一个小小的判断，限定在
+    alert('判断是不是ios 11+ and safari')
     if(/(iPhone|iPad|iPod|iOS)/i.test(window.navigator.userAgent) && navigator.vender.indexOf("apple") > -1) {
 　　　　return;
     }
