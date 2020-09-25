@@ -15,8 +15,9 @@
     <canvas id="canvasOutput"></canvas>
     <script src="test_pipeline.js" type="text/javascript"></script>
     <script>
-
+        alert('script start')
         Module.onRuntimeInitialized = _ => {
+            alert('onReady() start')
             onReady();
         };
 
