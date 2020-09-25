@@ -73,16 +73,19 @@
                     stop();
                     actionBtn.textContent = 'Start';
                 } else {
+                    alert('start() start')
                     start();
                     actionBtn.textContent = 'Stop';
                 }
             });
+            alert('btn listener added')
 
             function start() {
                 navigator.mediaDevices.getUserMedia({ video: true, audio: false })
                         .then(_stream => {
                             stream = _stream;
                             console.log('stream', stream);
+                            alert('stream get')
                             video.srcObject = stream;
                             video.play();
                             streaming = true;
