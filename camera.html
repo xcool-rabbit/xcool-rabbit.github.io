@@ -13,18 +13,14 @@
   </div>
   <video id="video" width="640" height="360"></video>
   <canvas id="canvasOutput"></canvas>
-  <script src="test_pipeline.js" type="text/javascript" onload="onCvLoaded()"></script>
+  <script src="test_pipeline.js" type="text/javascript"></script>
   <script>
     alert('script start')
-    function onCvLoaded() {
-      console.log('cv', cv);
+    
+    Module.onRuntimeInitialized = _ => {
       alert('onReady() start')
-      cv.onRuntimeInitialized = onReady;
-    }
-    // Module.onRuntimeInitialized = _ => {
-    //   alert('onReady() start')
-    //   onReady();
-    // };
+      onReady();
+    };
 
     const video = document.getElementById('video');
     const actionBtn = document.getElementById('actionBtn');
