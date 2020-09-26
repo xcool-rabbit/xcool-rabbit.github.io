@@ -17,7 +17,7 @@
   <script>
     alert('script start')
     
-    Module.onRuntimeInitialized = _ => {
+    Module.onRuntimeInitialized = function () {
       alert('onReady() start')
       onReady();
     };
